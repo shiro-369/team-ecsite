@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.internous.sirius.model.mapper.TblCartMapper">
+
+	<select id="findByUserId" resultType="jp.co.internous.sirius.model.domain.dto.CartDto">
+		SELECT 
+			cart.id, 
+			product.image_full_path AS imageFullPath, 
+			product.product_name AS productName, 
+			product.price AS price, 
+			cart.product_count AS productCount, 
+			(product.price * cart.product_count) AS subtotal
+		FROM 
+			tbl_cart AS cart
+		INNER JOIN 
+			mst_product AS product
+		ON  
+			cart.product_id = product.id
+		WHERE 
+			cart.user_id = #{userId}
+		ORDER BY 
+			cart.updated_at DESC, cart.created_at DESC
+	</select>
+	
+	<delete id="deleteCartById">
+		DELETE FROM 
+			tbl_cart 
+		WHERE id IN
+		<foreach item="id" open="(" close=")" collection="checkedIds" separator=",">
+			#{id}
+		</foreach> 
+	</delete>
+
+</mapper>
